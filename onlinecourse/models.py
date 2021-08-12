@@ -115,6 +115,20 @@ class Enrollment(models.Model):
     #    else:
     #        return False
 
+class Question(models.Model):
+    content = models.CharField(max_length=255)
+    grade = models.IntegerField()
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+
+    def is_get_score(self, selected_ids):
+        all_answers = self.choice_set.filter(is_correct=True).count()
+        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        if all_answers == selected_correct:
+            return True
+        else:
+            return False
+
 
 #  <HINT> Create a Choice Model with:
     # Used to persist choice content for a question
@@ -124,6 +138,11 @@ class Enrollment(models.Model):
     # Other fields and methods you would like to design
 # class Choice(models.Model):
 
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    content = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
+
 # <HINT> The submission model
 # One enrollment could have multiple submission
 # One submission could have multiple choices
@@ -132,3 +151,8 @@ class Enrollment(models.Model):
 #    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
 #    chocies = models.ManyToManyField(Choice)
 #    Other fields and methods you would like to design
+
+class Submission(models.Model):
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    choices = models.ManyToManyField(Choice)
+

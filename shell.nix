@@ -1,11 +1,4 @@
-{ pkgs ? import <nixpkgs> { } }:
-with pkgs;
-mkShell {
-  buildInputs = [
-    nixpkgs-fmt
-    python38Full
-    python38Packages.pip
-    pipenv
-  ];
-
+{ pkgs ? import <nixpkgs> {} }:
+pkgs.mkShell {
+  nativeBuildInputs = [ pkgs.pipenv ];
 }
