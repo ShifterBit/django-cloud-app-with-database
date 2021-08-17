@@ -1,4 +1,4 @@
 { pkgs ? import <nixpkgs> {} }:
 pkgs.mkShell {
-  nativeBuildInputs = [ pkgs.pipenv ];
+  nativeBuildInputs = [ pkgs.pipenv pkgs.python38Packages.django];
 }
