@@ -124,10 +124,15 @@ class Question(models.Model):
     def is_get_score(self, selected_ids):
         all_answers = self.choice_set.filter(is_correct=True).count()
         selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
-        if all_answers == selected_correct:
+        selected_wrong = self.choice_set.filter(is_correct=False, id__in=selected_ids).count()
+        if all_answers == selected_correct and selected_wrong == 0:
             return True
         else:
-            return False
+          return False
+    def not_selected(self, selected_ids, not_selected):
+            missing = self.choice_set.filter(is_correct=True).exclude(id__in=selected_ids)
+            for el in missing:
+                not_selected.append(el)
 
 
 #  <HINT> Create a Choice Model with:

@@ -146,21 +146,38 @@ def extract_answers(request):
         # Calculate the total score
 #def show_exam_result(request, course_id, submission_id):
 
+# def show_exam_result(request, course_id, submission_id):
+#     context = {}
+#     context['submission'] = []
+#     all_points = 0
+#     score = 0
+#     course = Course.objects.get(pk=course_id)
+#     submission = Submission.objects.get(pk=submission_id)
+#     questions = Question.objects.filter(course=course)
+#     for question in questions:
+#         all_points += question.grade
+#         if question.is_get_score(submission.choices.all()):
+#             score += question.grade
+#     
+#     grade = int(score/all_points * 100)
+#     context['grade'] = grade
+#     context['course'] = course
+# 
+#     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+# 
 def show_exam_result(request, course_id, submission_id):
     context = {}
-    context['submission'] = []
-    all_points = 0
-    score = 0
     course = Course.objects.get(pk=course_id)
     submission = Submission.objects.get(pk=submission_id)
-    questions = Question.objects.filter(course=course)
-    for question in questions:
-        all_points += question.grade
-        if question.is_get_score(submission.choices.all()):
-            score += question.grade
-    
-    grade = int(score/all_points * 100)
-    context['grade'] = grade
+    submission_choices_ids = submission.choices.values_list('pk', flat=True)
+    grade = 0
+    not_selected = []
+    for question in course.question_set.all():
+        question.not_selected(submission_choices_ids, not_selected)
+        if question.is_get_score(submission_choices_ids):
+            grade += question.grade
     context['course'] = course
-
+    context['grade'] = grade
+    context['not_selected'] = not_selected
+    context['selected'] = submission.choices.all()
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
